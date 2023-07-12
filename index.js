@@ -36,15 +36,20 @@ function gerarFaturaStr(fatura, pecas) {
         throw new Error(`Peça desconhecia: ${peca.tipo}`)
     }
 
-    // créditos para próximas contratações
-    creditos += Math.max(apre.audiencia - 30, 0)
-    if (peca.tipo === 'comedia') creditos += Math.floor(apre.audiencia / 5)
+    function calcularCredito(apre) {
+      let creditos = 0;
+      creditos += Math.max(apre.audiencia - 30, 0);
+      if (getPeca(apre).tipo === "comedia") 
+         creditos += Math.floor(apre.audiencia / 5);
+      return creditos;   
+    }
 
-    // mais uma linha da fatura
-    faturaStr += `  ${peca.nome}: ${formato(total / 100)} (${
-      apre.audiencia
-    } assentos)\n`
-    totalFatura += total
+    function formatarMoeda(valor) {
+      return new Intl.NumberFormat("pt-BR",
+        { style: "currency", currency: "BRL",
+          minimumFractionDigits: 2 }).format(valor/100);
+    }
+    
   }
   faturaStr += `Valor total: ${formato(totalFatura / 100)}\n`
   faturaStr += `Créditos acumulados: ${creditos} \n`
